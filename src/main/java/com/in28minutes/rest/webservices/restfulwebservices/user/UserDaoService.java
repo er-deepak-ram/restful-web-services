@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.in28minutes.rest.webservices.restfulwebservices.exception.UserNotFoundException;
+
 @Component
 public class UserDaoService {
 
@@ -34,5 +36,9 @@ public class UserDaoService {
 		user.setId(++userCount);
 		users.add(user);
 		return user;
+	}
+	
+	public boolean deleteById(int id) {
+		return users.removeIf(u -> u.getId().equals(id));
 	}
 }
