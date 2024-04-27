@@ -4,6 +4,8 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +34,19 @@ public class UserResource {
 		return service.findAll();
 	}
 	
+	// For implementing HATEOAS we need to add the links in the response object
+	// For that we will make use of EntityModel from org.springframework.hateoas package
 	@GetMapping("/{id}")
-	public User retrieveUser(@PathVariable int id) {
-		return service.findOne(id);
+	public EntityModel<User> retrieveUser(@PathVariable int id) {
+		User user = service.findOne(id);
+		
+		EntityModel<User> entityModel = EntityModel.of(user);
+		
+//		Making use of WebMvcLinkBuilder and its static methods to get the link of a desired method of this class
+		WebMvcLinkBuilder link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).retrieveAllUsers());
+		entityModel.add(link.withRel("all-users"));
+		
+		return entityModel;
 	}
 	
 	@DeleteMapping("/{id}")
